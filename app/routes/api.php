@@ -81,11 +81,20 @@ $app->group('/api', function() use ($app, $container) {
 
     });
 
-    $app->group('/guard', function() use ($app, $container) {
+     // $app->group('/guard', function() use ($app, $container) {
+     //    $app->post('/create/{id}', 'App\Controllers\api\GuardController:createGuardian')->setName('api.guard.add');
+     //    $app->get('/delete/{id}', 'App\Controllers\api\GuardController:deleteGuardian')->setName('api.guard.delete');
+     //    $app->get('/show/{id}', 'App\Controllers\api\GuardController:getUserByGuard')->setName('api.guard.show.user');
+     //    $app->get('/show', 'App\Controllers\api\GuardController:getGuardByUser')->setName('api.guard.show');
+     //    $app->get('/user', 'App\Controllers\api\GuardController:getUser')->setName('api.guard.get.user');
+        
+     //    });
+     $app->group('/guard', function() use ($app, $container) {
         $app->post('/create/{id}', 'App\Controllers\api\GuardController:createGuardian')->setName('api.guard.add');
         $app->get('/delete/{id}', 'App\Controllers\api\GuardController:deleteGuardian')->setName('api.guard.delete');
-        $app->get('/show/user/{id}', 'App\Controllers\api\GuardController:getUserByGuard')->setName('api.guard.show.user');
+        $app->get('/show/{id}', 'App\Controllers\api\GuardController:getUserByGuard')->setName('api.guard.show.user');
         $app->get('/show', 'App\Controllers\api\GuardController:getGuardByUser')->setName('api.guard.show');
-
+        $app->get('/user', 'App\Controllers\api\GuardController:getUser')->setName('api.guard.get.user');
+        
         });
 });

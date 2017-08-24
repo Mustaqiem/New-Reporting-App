@@ -10,10 +10,6 @@ $app->post('/admin', 'App\Controllers\web\UserController:loginAsAdmin');
 $app->get('/user', 'App\Controllers\web\UserController:getAllUser');
 $app->get('/', 'App\Controllers\web\UserController:getLogin')->setName('login');
 $app->post('/', 'App\Controllers\web\UserController:login')->setName('post.login');
-
-$app->get('/guard/show', 'App\Controllers\web\GuardController:showGuardByUser');
-$app->get('/guard/show/{id}', 'App\Controllers\web\GuardController:showUserByGuard');
-$app->get('/guard/delete/{id}', 'App\Controllers\web\GuardController:deleteGuardian');
 $app->group('', function() use ($app, $container) {
     $app->get('/home', 'App\Controllers\web\HomeController:index')->setName('home');
     $app->get('/logout', 'App\Controllers\web\UserController:logout')->setName('logout');
@@ -57,6 +53,13 @@ $app->group('', function() use ($app, $container) {
         $app->post('/image/change', 'App\Controllers\web\UserController:changeImage')->setName('user.change.image');
         $app->get('/change/password', 'App\Controllers\web\UserController:getChangePassword')->setName('change.password');
         $app->post('/change/password', 'App\Controllers\web\UserController:postChangePassword')->setName('post.change.password');
+    });
+
+     $app->group('/guard', function() use ($app, $container) {
+        $app->get('/show/user', 'App\Controllers\web\GuardController:showGuardByUser');
+        $app->get('/user', 'App\Controllers\web\GuardController:getUser');
+        $app->get('/show/{id}', 'App\Controllers\web\GuardController:showUserByGuard');
+        $app->get('/delete/{id}', 'App\Controllers\web\GuardController:deleteGuardian');
     });
     // ->add(new \App\Middlewares\web\GuardMiddleware($container));
     // )->add(new \App\Middlewares\web\AuthMiddleware($container)

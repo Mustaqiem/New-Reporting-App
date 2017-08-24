@@ -64,15 +64,14 @@ class GuardController extends BaseController
     public function getUserByGuard(Request $request, Response $response, $args)
     {
         $guard = new GuardModel($this->db);
-        $users = new \App\Models\Users\UserModel($this->container->db);
+        $users = new \App\Models\Users\UserModel($this->db);
+        $token = $request->getHeader('Authorization')[0];
         $userToken = new \App\Models\Users\UserToken($this->container->db);
-
+        $userId = $userToken->getUserId($token);
         $findGuard = $guard->findGuard('guard_id', $args['id']);
-        $token = $response->getHeader('Authorization');
-        $findUser = $userToken->find('token', '4411c348e004615488e72b2fc7cf8144');
-        $guards = $guard->findGuards('user_id', $findUser['user_id'], 'guard_id', $args['id']);
+        $guards = $guard->findGuards('user_id', $userId['user_id'], 'guard_id', $args['id']);
 
-        $user = $users->find('id', $findUser['user_id']);
+        $user = $users->find('id', $userId['user_id']);
         $query = $request->getQueryParams();
 
         if ($guards) {
@@ -81,19 +80,19 @@ class GuardController extends BaseController
                 $findAll = $guard->findAllUser($args['id'])->setPaginate($page, 5);
                     // var_export($findAll);die();
                     // var_dump($findGuard);die();
-                $data = $this->responseDetail(200, 'Berhasil menampilkan user dalam guardian', [
+                $data = $this->responseDetail(200, false, 'Berhasil menampilkan user dalam guardian', [
                     'query'     =>  $query,
-                    'result'    =>  $findAll['data'],
-                    'meta'      =>  $findAll['pagination'],
+                    'data'    =>  $findAll['data'],
+                    'pagination'      =>  $findAll['pagination'],
                 ]);
 
             } else {
-                $data = $this->responseDetail(404, 'User tidak ditemukan', [
+                $data = $this->responseDetail(404, true, 'User tidak ditemukan', [
                     'query'     =>  $query
                 ]);
             }
         } else {
-            $data = $this->responseDetail(403, 'User tidak di temukan atau Kamu belum menambahkan id'. " ".$args['id']." ". 'menjadi guard', [
+            $data = $this->responseDetail(403, true, 'User tidak di temukan atau Kamu belum menambahkan id'. " ".$args['id']." ". 'menjadi guard', [
                     'query'     =>  $query
                 ]);
         }
@@ -104,25 +103,49 @@ class GuardController extends BaseController
     public function getGuardByUser(Request $request, Response $response, $args)
     {
         $guard = new GuardModel($this->db);
+        $token = $request->getHeader('Authorization')[0];
         $userToken = new \App\Models\Users\UserToken($this->container->db);
-        $token = $response->getHeader('Authorization');
-        $userId = $userToken->find('token', $token);
+        // $userId = $userToken->find('token', '90c4a9cebeaae6515c7dd4d265271bf6');
+        $userId = $userToken->getUserId($token);
         $guards = $guard->findGuards('guard_id', $args['id'], 'user_id', $userId['user_id']);
-var_dump($guards);die();
+// var_dump($guards);die();
         $query = $request->getQueryParams();
          if ($userId['user_id'] || $guards ) {
                 $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
-                $userGuard = $guard->getUserId($userId['user_id'])->setPaginate($page, 9);
+                $userGuard = $guard->getUserId($userId['user_id'])->setPaginate($page, 5);
                 // var_dump($userGuard);die();
-             $data = $this->responseDetail(200, 'Berhasil menampilkan data', [
+             $data = $this->responseDetail(200, false, 'Berhasil menampilkan data', [
                     'query'     =>  $query,
-                    'result'    =>  $userGuard['data'],
-                    'meta'      =>  $userGuard['pagination'],
+                    'data'    =>  $userGuard['data'],
+                    'pagination'      =>  $userGuard['pagination'],
                 ]);
 
         } else {
-            $data = $this->responseDetail(400, true, 'Oh now');
+            $data = $this->responseDetail(400, true, 'Gagal menampilkan data');
         }
         return $data;
       }
+
+    // Function get user by guard login
+    public function getUser(Request $request, Response $response, $args)
+    {
+        $guard = new GuardModel($this->db);
+        $token = $request->getHeader('Authorization')[0];
+        $userToken = new \App\Models\Users\UserToken($this->container->db);
+        $userId = $userToken->getUserId($token);
+        $query = $request->getQueryParams();
+         if ($userId) {
+                $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
+                $userGuard = $guard->findAllUser($userId)->setPaginate($page, 5);
+                // var_dump($userGuard);die();
+             $data = $this->responseDetail(200, false, 'Berhasil menampilkan user', [
+                    'data'    =>  $userGuard['data'],
+                    'pagination'      =>  $userGuard['pagination'],
+                ]);
+
+        } else {
+            $data = $this->responseDetail(400, true, 'Gagal menampilkan user');
+        }
+        return $data;
+    }
 }
