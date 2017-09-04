@@ -39,7 +39,7 @@ $app->group('/api', function() use ($app, $container) {
     // })->add(new \App\Middlewares\AuthToken($container));
 
     $app->group('/user', function() use ($app, $container) {
-        $this->get('', 'App\Controllers\api\UserController:index');
+        $this->get('', 'App\Controllers\api\UserController:index')->setName('api.user.list');
         $this->post('/update/{id}', 'App\Controllers\api\UserController:updateProfile')->setName('api.edit.account');
         $this->post('/password/change', 'App\Controllers\api\UserController:changePassword')->setName('api.change.password');
         $this->get('/detail', 'App\Controllers\api\UserController:detailAccount')->setName('api.detail.account');
@@ -52,7 +52,7 @@ $app->group('/api', function() use ($app, $container) {
     $app->group('/group', function() use ($app, $container) {
         $app->post('/create', 'App\Controllers\api\GroupController:add')->setName('api.group.add');
         $app->put('/edit/{id}', 'App\Controllers\api\GroupController:update');
-        $app->get('/list', 'App\Controllers\api\GroupController:index');
+        $app->get('/list', 'App\Controllers\api\GroupController:index')->setName('api.group.list');
         $app->get('/enter/{id}', 'App\Controllers\api\GroupController:enterGroup')->setName('api.enter.group');
         $app->get('/find/{id}', 'App\Controllers\api\GroupController:findGroup');
         $app->get('/delete/{id}', 'App\Controllers\api\GroupController:delete');
@@ -84,6 +84,7 @@ $app->group('/api', function() use ($app, $container) {
     });
 
     $app->group('/guard', function() use ($app, $container) {
+        $app->get('', 'App\Controllers\api\GuardController:getAll')->setName('api.guard');
         $app->post('/create/{id}', 'App\Controllers\api\GuardController:createGuardian')->setName('api.guard.add');
         $app->get('/delete/{id}', 'App\Controllers\api\GuardController:deleteGuardian')->setName('api.guard.delete');
         $app->get('/show/user', 'App\Controllers\api\GuardController:getUserByGuard')->setName('api.guard.show.user');
@@ -92,4 +93,5 @@ $app->group('/api', function() use ($app, $container) {
         $app->get('/timeline/{id}', 'App\Controllers\api\ItemController:guardTimeline')->setname('api.guard.timeline');
 
     });
+
 });

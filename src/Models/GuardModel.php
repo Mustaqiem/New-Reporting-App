@@ -5,6 +5,7 @@ class GuardModel extends BaseModel
 {
 	protected $table = 'guardian';
 	protected $column = ['guard_id', 'user_id'];
+    
 	public function add(array $data)
 	{
 		$data = [
@@ -112,5 +113,17 @@ class GuardModel extends BaseModel
          $qb->delete($this->table)
             ->where('guard_id = ' . $guardId)
             ->execute();
+    }
+
+    public function joinGuard($id)
+    {
+       $qb = $this->db->createQueryBuilder();
+        $this->query = $qb->select('users.*')
+             ->from('users', 'users')
+             ->join('users', $this->table, 'guard', 'users.id = guard.user_id');
+             // ->where('guard.guard_id = :id')
+             // ->setParameter(':id', 9);
+             // $result = $qb->execute();
+            return $this;
     }
 }

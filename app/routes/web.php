@@ -5,7 +5,20 @@ $app->post('/reset', 'App\Controllers\web\UserController:forgotPassword')->setNa
 $app->get('/test', 'App\Controllers\web\HomeController:index')->setName('timeline');
 $app->get('/404', 'App\Controllers\web\HomeController:notFound')->setName('not.found');
 
-$app->get('/admin', 'App\Controllers\web\UserController:getLoginAsAdmin')->setName('login.admin');
+$app->get('/admin', 'App\Controllers\web\AdminController:getLoginAsAdmin')->setName('login.admin');
+
+$app->group('/admin', function() use ($app, $container) {
+    $app->get('/home', 'App\Controllers\web\AdminController:index')->setName('admin.dashboard');
+    $app->get('/guard', 'App\Controllers\web\AdminController:guardList')->setName('admin.guard.list');
+    $app->get('/user', 'App\Controllers\web\AdminController:userList')->setName('admin.user.list');
+    $app->get('/item', 'App\Controllers\web\AdminController:getAllItem')->setName('admin.item.list');
+$app->group('/group', function() use ($app, $container) {
+    $app->get('', 'App\Controllers\web\AdminController:groupList')->setName('admin.group.list');
+    $app->get('/{id}/members', 'App\Controllers\web\AdminController:getAllUserInGroup')->setName('admin.group.member');
+    $app->get('/user', 'App\Controllers\web\AdminController:getAllUserGroup')->setName('admin.group.user');
+    $app->get('/addMember/{id}', 'App\Controllers\web\AdminController:getAddMember')->setName('admin.group.add.member');
+    });
+});
 $app->post('/admin', 'App\Controllers\web\UserController:loginAsAdmin');
 $app->get('/user', 'App\Controllers\web\UserController:getAllUser');
 $app->get('/', 'App\Controllers\web\UserController:getLogin')->setName('login');

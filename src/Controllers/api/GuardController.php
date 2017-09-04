@@ -9,6 +9,30 @@ use App\Models\Users\UserModel;
 
 class GuardController extends BaseController
 {
+    public function getAll(Request $request, Response $response)
+    {
+        $guard = new GuardModel($this->db);
+        $userToken = new \App\Models\Users\UserToken($this->db);
+        $token = $request->getHeader('Authorization')[0];
+        $userId = $userToken->getUserId($token);
+        
+        $page = !$request->getQueryParam('page') ? 1 : $request->getQueryParam('page');
+        $perPage = $request->getQueryParam('perpage');
+        $getGuard = $guard->joinGuard()->setPaginate($page, $perPage);
+
+        if ($getGuard) {
+            $data = $this->responseDetail(200, false, 'Data tersedia', [
+                'data' => $getGuard['data'],
+                'pagination' => $getGuard['pagination']
+            ]);
+
+        } else {
+            $data = $this->responseDetail(200, false, 'Data kosong');
+        }
+
+        return $data;
+    }
+
     // Function Create Guardian
     public function createGuardian(Request $request, Response $response, $args)
     {
